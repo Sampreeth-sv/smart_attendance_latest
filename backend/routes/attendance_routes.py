@@ -36,10 +36,7 @@ def mark_attendance(
 
     student = db.query(Student).filter(Student.usn == user.usn).first()
 
-    session = db.query(ActiveSession).filter(
-        ActiveSession.session_id == payload.session_id,
-        ActiveSession.active == True
-    ).first()
+    session = db.query(ActiveSession).filter(ActiveSession.session_id == session_id,ActiveSession.active == True).first()
     if not session:
         raise HTTPException(status_code=400, detail="Invalid or expired session")
 
@@ -281,4 +278,54 @@ def get_attendance_history(
             }
             for r in records
         ]
+    }
+
+@router.get("/parent/percentage")
+def parent_percentage(payload=Depends(verify_token), db: Session = Depends(get_db)):
+    email = payload.get("email")
+
+    # get student
+    student = db.query(Student).filter(Student.parent_email == email).first()
+    if not student:
+        raise HTTPException(status_code=404, detail="No student linked")
+
+    usn = student.usn
+    section = student.section
+
+    # get all subjects from sessions
+    sessions = db.query(ActiveSession).filter(
+        ActiveSession.section == section
+    ).all()
+
+    subject_sessions = {}
+    for s in sessions:
+        subject_sessions.setdefault(s.subject, 0)
+        subject_sessions[s.subject] += 1
+
+    # attendance count
+    attendance = db.query(Attendance).filter(Attendance.usn == usn).all()
+
+    subject_attendance = {}
+    for a in attendance:
+        subject_attendance.setdefault(a.subject, 0)
+        subject_attendance[a.subject] += 1
+
+    # calculate %
+    result = []
+    for subject in subject_sessions:
+        total = subject_sessions.get(subject, 0)
+        attended = subject_attendance.get(subject, 0)
+
+        percentage = (attended / total * 100) if total > 0 else 0
+
+        result.append({
+            "subject": subject,
+            "attended": attended,
+            "total": total,
+            "percentage": round(percentage, 2)
+        })
+
+    return {
+        "student": student.usn,
+        "data": result
     }
