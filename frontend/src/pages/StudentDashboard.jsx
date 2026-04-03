@@ -24,7 +24,7 @@ function StudentDashboard({ user, onLogout }) {
 
     const poll = async () => {
       try {
-        const res = await fetch("http://localhost:5000/qr/active-session");
+        const res = await fetch("http://127.0.0.1:5000/qr/active-session");
         if (!res.ok) return;
 
         const data = await res.json();
@@ -126,7 +126,7 @@ function StudentDashboard({ user, onLogout }) {
     try {
       const token = sessionStorage.getItem("token");
 
-      const res = await fetch("http://localhost:5000/attendance/mark", {
+      const res = await fetch("http://127.0.0.1:5000/attendance/mark", {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
@@ -142,11 +142,16 @@ function StudentDashboard({ user, onLogout }) {
 
       const data = await res.json();
       if (res.ok) {
-        setMarkedSessionId(currentSession.session_id);
-        setAttendanceMarked(true);
-        setStep(4);
-        alert("🎉 Attendance Marked!");
-      } else {
+  setMarkedSessionId(currentSession.session_id);
+  setAttendanceMarked(true);
+  setStep(4);
+  alert("🎉 Attendance Marked!");
+
+  // ✅ FORCE REFRESH SESSION SYNC
+  setTimeout(() => {
+    window.location.reload();
+  }, 1000);
+} else {
         alert(data.detail || "Failed to mark attendance");
       }
     } catch (error) {
@@ -168,7 +173,7 @@ function StudentDashboard({ user, onLogout }) {
     try {
       const token = sessionStorage.getItem("token");
 
-      const res = await fetch("http://localhost:5000/facial/verify", {
+      const res = await fetch("http://127.0.0.1:5000/facial/verify", {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
