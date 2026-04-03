@@ -1,4 +1,5 @@
 import { useState, useEffect, useRef } from "react";
+import HODDashboard from "./HODDashboard";
 
 function AdminDashboard({ admin, onLogout }) {
   const [view, setView] = useState("home");
@@ -34,7 +35,7 @@ function AdminDashboard({ admin, onLogout }) {
 
   const loadStudents = async () => {
     try {
-      const data = await apiFetch("http://localhost:5000/admin/students");
+      const data = await apiFetch("http://127.0.0.1:5000/admin/students");
       setStudents(data.students || []);
     } catch (err) {
       console.error(err);
@@ -44,7 +45,7 @@ function AdminDashboard({ admin, onLogout }) {
 
   const loadTeachers = async () => {
     try {
-      const data = await apiFetch("http://localhost:5000/admin/teachers");
+      const data = await apiFetch("http://127.0.0.1:5000/admin/teachers");
       setTeachers(data.teachers || []);
     } catch (err) {
       console.error(err);
@@ -61,7 +62,7 @@ function AdminDashboard({ admin, onLogout }) {
       };
 
       const data = await apiFetch(
-        "http://localhost:5000/admin/attendance/report",
+        "http://127.0.0.1:5000/admin/attendance/report",
         {
           method: "POST",
           body: JSON.stringify(cleanFilter),
@@ -88,7 +89,7 @@ function AdminDashboard({ admin, onLogout }) {
       password: form.password.value,
     };
     try {
-      await apiFetch("http://localhost:5000/admin/students", {
+      await apiFetch("http://127.0.0.1:5000/admin/students", {
         method: "POST",
         body: JSON.stringify(body),
       });
@@ -120,7 +121,7 @@ function AdminDashboard({ admin, onLogout }) {
     };
 
     try {
-      await apiFetch("http://localhost:5000/admin/teachers", {
+      await apiFetch("http://127.0.0.1:5000/admin/teachers", {
         method: "POST",
         body: JSON.stringify(body),
       });
@@ -203,7 +204,7 @@ function AdminDashboard({ admin, onLogout }) {
 
     try {
       // 👇 backend expects: teacher_id + timetable (dict)
-      await apiFetch("http://localhost:5000/admin/timetable", {
+      await apiFetch("http://127.0.0.1:5000/admin/timetable", {
         method: "POST",
         body: JSON.stringify({
           teacher_id: ttTeacherId,
@@ -228,7 +229,7 @@ function AdminDashboard({ admin, onLogout }) {
       .filter(Boolean);
 
     try {
-      await apiFetch("http://localhost:5000/admin/sections/assign", {
+      await apiFetch("http://127.0.0.1:5000/admin/sections/assign", {
         method: "POST",
         body: JSON.stringify({
           usns,
@@ -254,7 +255,7 @@ function AdminDashboard({ admin, onLogout }) {
       : [];
 
     try {
-      await apiFetch("http://localhost:5000/admin/classrooms", {
+      await apiFetch("http://127.0.0.1:5000/admin/classrooms", {
         method: "POST",
         body: JSON.stringify({
           room_number: form.room_number.value,
@@ -289,7 +290,7 @@ function AdminDashboard({ admin, onLogout }) {
       const base64Data = reader.result;
 
       try {
-        await apiFetch("http://localhost:5000/admin/face/register", {
+        await apiFetch("http://127.0.0.1:5000/admin/face/register", {
           method: "POST",
           body: JSON.stringify({
             usn,
@@ -419,6 +420,12 @@ function AdminDashboard({ admin, onLogout }) {
         >
           Sections
         </button>
+        <button
+  className="btn btn-outline-primary"
+  onClick={() => setView("analytics")}
+>
+  📊 Analytics
+</button>
         <button
           className="btn btn-outline-primary"
           onClick={() => setView("classrooms")}
@@ -879,7 +886,9 @@ function AdminDashboard({ admin, onLogout }) {
                   }
                 />
                 <button className="btn btn-primary w-100">Load Report</button>
+                
               </form>
+             
             </div>
           </div>
 
@@ -922,6 +931,9 @@ function AdminDashboard({ admin, onLogout }) {
           </div>
         </div>
       )}
+      {view === "analytics" && (
+  <HODDashboard user={admin} onLogout={onLogout} />
+)}
     </div>
   );
 }
