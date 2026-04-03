@@ -11,7 +11,9 @@ from routes import (
     face_registration_routes,
     teacher_override_routes,
     teacher_routes,
-    admin_routes
+    admin_routes,
+    analytics_routes,
+    parent_routes
 )
 
 app = FastAPI(title="Smart Attendance System")
@@ -36,6 +38,8 @@ app.include_router(face_registration_routes.router, prefix="/face-registration",
 app.include_router(teacher_override_routes.router, prefix="/teacher", tags=["Teacher Override"])
 app.include_router(teacher_routes.router, prefix="/teacher", tags=["Teacher"])
 app.include_router(admin_routes.router, prefix="/admin", tags=["Admin"])
+app.include_router(analytics_routes.router, prefix="/analytics", tags=["Analytics"])
+app.include_router(parent_routes.router, prefix="/parent", tags=["Parent"])
 
 @app.get("/")
 def home():
