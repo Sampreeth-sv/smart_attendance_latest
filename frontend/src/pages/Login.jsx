@@ -55,7 +55,8 @@ function Login({ onLogin, error }) {
             >
               <option value="student">Student</option>
               <option value="teacher">Teacher</option>
-              <option value="admin">Admin</option>  {/* ✅ ADDED */}
+              <option value="admin">Admin</option> 
+              <option value="parent">Parent</option>  {/* ✅ ADDED */}
             </select>
           </div>
 
